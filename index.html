@@ -59,7 +59,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
-      const boxNum = 1000;
       const ul = document.getElementById("checkboxes");
 
       socket.on("init-state", (states) => {

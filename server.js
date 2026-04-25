@@ -31,7 +31,7 @@ console.log("STATES FIELD:", checkbox?.states);
   if (!checkbox) {
     console.log("Creating new checkbox doc...");
     checkbox = await Checkbox.create({
-      states: new Array(1000).fill(false),
+      states: new Array(10000).fill(false),
     });
   }
    console.log("Final checkbox:", checkbox);
@@ -55,6 +55,8 @@ io.on("connection", (socket) => {
     }
   });
 });
+
+await Checkbox.deleteMany();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
