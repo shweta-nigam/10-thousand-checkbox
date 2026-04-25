@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>10 million checkbox</title>
+    <title>10k checkbox</title>
     <style>
       body {
         color: white;
@@ -50,51 +50,56 @@
       }
     </style>
   </head>
-  <body>
-    <h1>10 million checkbox</h1>
-    <section class="main-container">
-      <ul id="checkboxes"></ul>
-    </section>
+   <body>
+    <h1>10,000 Checkboxes</h1>
+
+    <ul id="checkboxes"></ul>
 
     <script src="/socket.io/socket.io.js"></script>
+
     <script>
       const socket = io();
       const ul = document.getElementById("checkboxes");
 
+      // INITIAL LOAD
       socket.on("init-state", (states) => {
+        if (!states) return;
+
         ul.innerHTML = "";
-  if (!states) {
-    console.error("States is null/undefined");
-    return;
-  }
 
-        states.forEach((checked, i) => {
-          const checkBox = document.createElement("li");
-          checkBox.className = "checkbox";
+        // loop through 10k items
+        for (let i = 0; i < states.length; i++) {
+          const li = document.createElement("li");
+          li.className = "checkbox";
 
-          if (checked) {
-            checkBox.classList.add("checked");
+          if (states[i]) {
+            li.classList.add("checked");
           }
 
-          checkBox.addEventListener("click", () => {
-            const isChecked = checkBox.classList.toggle("checked");
+          // click handler
+          li.addEventListener("click", () => {
+            const isChecked = li.classList.toggle("checked");
 
             socket.emit("toggle-checkbox", {
               index: i,
               checked: isChecked,
             });
           });
-          ul.appendChild(checkBox);
-        });
+
+          ul.appendChild(li);
+        }
       });
 
-      socket.on("update-checkbox", ({index, checked}) => {
-        const allBoxes = document.querySelectorAll(".checkbox");
+      
+      socket.on("update-checkbox", ({ index, checked }) => {
+        const boxes = document.querySelectorAll(".checkbox");
+
+        if (!boxes[index]) return;
 
         if (checked) {
-          allBoxes[index].classList.add("checked");
+          boxes[index].classList.add("checked");
         } else {
-          allBoxes[index].classList.remove("checked");
+          boxes[index].classList.remove("checked");
         }
       });
     </script>
