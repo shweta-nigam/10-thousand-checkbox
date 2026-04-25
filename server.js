@@ -23,18 +23,20 @@ const PORT = process.env.PORT ?? 3000;
 let checkbox;
 
 async function initCheckBox() {
-  checkbox = await Checkbox.findOne();
-
-console.log("RAW DB RESULT:", checkbox);
-console.log("STATES FIELD:", checkbox?.states);
+  let checkbox = await Checkbox.findOne();
 
   if (!checkbox) {
-    console.log("Creating new checkbox doc...");
+    console.log("Creating bitset checkbox...");
+
+    const total = 10000000;
+    const bufferSize = Math.ceil(total / 8);
+
     checkbox = await Checkbox.create({
-      states: new Array(10000).fill(false),
+      states: Buffer.alloc(bufferSize),
     });
   }
-   console.log("Final checkbox:", checkbox);
+
+  console.log("Initialized");
 }
 
 await initCheckBox();
@@ -56,7 +58,7 @@ io.on("connection", (socket) => {
   });
 });
 
-await Checkbox.deleteMany();
+// await Checkbox.deleteMany();
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
