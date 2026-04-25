@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>10 million checkbox</title>
+    <style>
+      body {
+        color: white;
+        padding: 0;
+        margin: 0;
+        background-color: #0e0b0b;
+      }
+      .main-container {
+        background-color: #2b2929;
+      }
+      .checkbox {
+        background-color: rgb(168, 26, 145);
+        height: 40px;
+        width: 40px;
+        border: 1px dashed powderblue;
+        display: block;
+        list-style: none;
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      h1 {
+        text-align: center;
+      }
+      #checkboxes {
+        display: flex;
+        border-color: red;
+        flex-wrap: wrap;
+        gap: 10px;
+        padding: 20px;
+        align-items: center;
+      }
+      .checkbox.checked {
+        background-color: rgba(50, 205, 50, 0.856);
+        border: 2px solid white;
+      }
+      .checkbox.checked::after {
+        content: "✔";
+        color: rgb(168, 26, 145);
+        font-size: 30px;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>10 million checkbox</h1>
+    <section class="main-container">
+      <ul id="checkboxes"></ul>
+    </section>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const boxNum = 1000;
+      const ul = document.getElementById("checkboxes");
+
+      socket.on("init-state", (states) => {
+        ul.innerHTML = "";
+  if (!states) {
+    console.error("States is null/undefined");
+    return;
+  }
+
+        states.forEach((checked, i) => {
+          const checkBox = document.createElement("li");
+          checkBox.className = "checkbox";
+
+          if (checked) {
+            checkBox.classList.add("checked");
+          }
+
+          checkBox.addEventListener("click", () => {
+            const isChecked = checkBox.classList.toggle("checked");
+
+            socket.emit("toggle-checkbox", {
+              index: i,
+              checked: isChecked,
+            });
+          });
+          ul.appendChild(checkBox);
+        });
+      });
+
+      socket.on("update-checkbox", ({index, checked}) => {
+        const allBoxes = document.querySelectorAll(".checkbox");
+
+        if (checked) {
+          allBoxes[index].classList.add("checked");
+        } else {
+          allBoxes[index].classList.remove("checked");
+        }
+      });
+    </script>
+  </body>
+</html>
